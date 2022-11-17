@@ -27,7 +27,7 @@ function downloadJSON(responseJson, fileName) {
         fileName = location.href.split("/").slice(-1)[0];
     }
     const elementId = fileName + "_" + new Date().getTime();
-    document.body.innerHTML += "<a id='"+elementId+"' style='display:none'></a>";
+    document.body.innerHTML += "<a id='" + elementId + "' style='display:none'></a>";
     responseJson = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(responseJson));
     let dlAnchorElem = document.getElementById(elementId);
     dlAnchorElem.setAttribute("href", responseJson);
@@ -36,14 +36,12 @@ function downloadJSON(responseJson, fileName) {
 }
 
 function isBase64(str) {
-    if (str === '' || str.trim() === '') 
-    { 
-    	return false; 
+    if (str != undefined && str != '' && str.trim() != '') {
+        const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+        try {
+            return (btoa(atob(str)) == str) || base64regex.test(str);
+        } catch (err) {
+        }
     }
-    const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-    try {
-        return (btoa(atob(str)) == str) || base64regex.test(str);
-    } catch (err) {
-        return false;
-    }
+    return false;
 }
