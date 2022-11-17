@@ -34,3 +34,16 @@ function downloadJSON(responseJson, fileName) {
     dlAnchorElem.setAttribute("download", fileName + ".json");
     dlAnchorElem.click();
 }
+
+function isBase64(str) {
+    if (str === '' || str.trim() === '') 
+    { 
+    	return false; 
+    }
+    const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    try {
+        return (btoa(atob(str)) == str) || base64regex.test(str);
+    } catch (err) {
+        return false;
+    }
+}
