@@ -2,7 +2,7 @@ function getRandomEmail() {
     let chars = 'abcdefghijklmnopqrstuvwxyz';
     let email = '';
 
-    [['.', 6, 10], ['.', 4, 7], ['@', 5, 8]].forEach((eleArr) => {
+    [['', 6, 10], ['.', 4, 7], ['@', 5, 8]].forEach((eleArr) => {
         email += eleArr[0];
         const min = eleArr[1];
         const max = eleArr[2];
