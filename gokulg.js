@@ -60,3 +60,37 @@ async function sha256(message) {
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     return hashHex;
 }
+
+function loadJS(FILE_URL, async = true) {
+  let scriptEle = document.createElement("script");
+
+  scriptEle.setAttribute("src", FILE_URL);
+  scriptEle.setAttribute("type", "text/javascript");
+  scriptEle.setAttribute("async", async);
+
+  document.body.appendChild(scriptEle);
+
+  // success event 
+  scriptEle.addEventListener("load", () => {
+    console.log("File loaded")
+  });
+   // error event
+  scriptEle.addEventListener("error", (ev) => {
+    console.log("Error on loading file", ev);
+  });
+}
+
+function getRandomElementFromTheArray(array) {
+  return array[Math.floor((Math.random()*array.length))];
+}
+
+function shuffleArray(array) {
+  array.sort(() => Math.random() - 0.5);
+}
+
+function getCSVContent(rows){
+    return "data:text/csv;charset=utf-8," 
+    + rows.map(e => e.join(",")).join("\n");
+}
+
+//Cookies.set(cookie["name"],cookie["value"],{ path: cookie["path"], domain: cookie["domain"],expires:365,SameSite=cookie["sameSite"],Secure:cookie["secure"],SameParty:true,Priority:"High"});
