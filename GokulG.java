@@ -1,6 +1,8 @@
 import org.apache.commons.codec.digest.DigestUtils;
 import java.lang.reflect.Constructor;
 
+import java.util.Random;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -148,5 +150,21 @@ public Class GokulG {
                     .forEach(pw::println);
         }
         LOGGER.log(Level.INFO, "{0} is created", new Object[]{fileName});
+    }
+
+
+    public static String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+        return sb.toString();
+    }
+
+    public static String generateRandomEmailAddress() {
+        return generateRandomString(8) + "@" + generateRandomString(6) + ".com";
     }
 }
