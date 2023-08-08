@@ -93,4 +93,13 @@ function getCSVContent(rows){
     + rows.map(e => e.join(",")).join("\n");
 }
 
+function copyToClipBoard(text){
+    let copyText = document.createElement("input");
+    copyText.value = text;
+    document.body.appendChild(copyText);
+    copyText.select();
+    document.execCommand("copy");
+    document.body.removeChild(copyText);
+}
+
 //Cookies.set(cookie["name"],cookie["value"],{ path: cookie["path"], domain: cookie["domain"],expires:365,SameSite=cookie["sameSite"],Secure:cookie["secure"],SameParty:true,Priority:"High"});
