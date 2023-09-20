@@ -22,6 +22,23 @@ async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function downloadFile(url, fileName) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob";
+    xhr.onload = function () {
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement('a');
+        tag.href = imageUrl;
+        tag.download = fileName;
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+    }
+    xhr.send();
+}
+
 function downloadJSON(responseJson, fileName) {
     if (fileName == undefined || fileName == "") {
         fileName = location.href.split("/").slice(-1)[0];
@@ -48,7 +65,7 @@ function isBase64(str) {
 
 async function sha256(message) {
     // encode as UTF-8
-    const msgBuffer = new TextEncoder().encode(message);                    
+    const msgBuffer = new TextEncoder().encode(message);
 
     // hash the message
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -62,38 +79,38 @@ async function sha256(message) {
 }
 
 function loadJS(FILE_URL, async = true) {
-  let scriptEle = document.createElement("script");
+    let scriptEle = document.createElement("script");
 
-  scriptEle.setAttribute("src", FILE_URL);
-  scriptEle.setAttribute("type", "text/javascript");
-  scriptEle.setAttribute("async", async);
+    scriptEle.setAttribute("src", FILE_URL);
+    scriptEle.setAttribute("type", "text/javascript");
+    scriptEle.setAttribute("async", async);
 
-  document.body.appendChild(scriptEle);
+    document.body.appendChild(scriptEle);
 
-  // success event 
-  scriptEle.addEventListener("load", () => {
-    console.log("File loaded")
-  });
-   // error event
-  scriptEle.addEventListener("error", (ev) => {
-    console.log("Error on loading file", ev);
-  });
+    // success event 
+    scriptEle.addEventListener("load", () => {
+        console.log("File loaded")
+    });
+    // error event
+    scriptEle.addEventListener("error", (ev) => {
+        console.log("Error on loading file", ev);
+    });
 }
 
 function getRandomElementFromTheArray(array) {
-  return array[Math.floor((Math.random()*array.length))];
+    return array[Math.floor((Math.random() * array.length))];
 }
 
 function shuffleArray(array) {
-  array.sort(() => Math.random() - 0.5);
+    array.sort(() => Math.random() - 0.5);
 }
 
-function getCSVContent(rows){
-    return "data:text/csv;charset=utf-8," 
-    + rows.map(e => e.join(",")).join("\n");
+function getCSVContent(rows) {
+    return "data:text/csv;charset=utf-8,"
+        + rows.map(e => e.join(",")).join("\n");
 }
 
-function copyToClipBoard(text){
+function copyToClipBoard(text) {
     let copyText = document.createElement("input");
     copyText.value = text;
     document.body.appendChild(copyText);
