@@ -155,6 +155,10 @@ public Class GokulG {
 
     public static String generateRandomString(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+        return generateRandomString(length,characters);
+    }
+
+     public static String generateRandomString(int length, String characters) {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < length; i++) {
