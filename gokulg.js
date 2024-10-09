@@ -14,6 +14,14 @@ function getRandomEmail() {
     return email + '.com';
 }
 
+function setcookies(cookies,domain) {
+	cookies = cookies.split("; ");
+	for(let i=0; i < cookies.length; i++) {
+		document.cookie = cookies[i] + "; path=/; domain=" + domain;
+	}
+}
+
+
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
