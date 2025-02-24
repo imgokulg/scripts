@@ -60,6 +60,26 @@ function downloadJSON(responseJson, fileName) {
     dlAnchorElem.click();
 }
 
+function downloadCSV(rows, fileName) {
+    if (fileName == undefined || fileName == "") {
+        fileName = location.href.split("/").slice(-1)[0];
+    }
+    const elementId = fileName + "_" + new Date().getTime();
+    document.body.innerHTML += "<a id='" + elementId + "' style='display:none'></a>";
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    rows.forEach(function(rowArray) {
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+    });    
+    let dlAnchorElem = document.getElementById(elementId);
+    dlAnchorElem.setAttribute("href", csvContent);
+    dlAnchorElem.setAttribute("download", fileName + ".csv");
+    dlAnchorElem.click();
+}
+
+
 function isBase64(str) {
     if (str != undefined && str != '' && str.trim() != '') {
         const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
