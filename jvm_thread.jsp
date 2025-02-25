@@ -1,5 +1,3 @@
-<%@page import="java.io.*"%>
-<%@page import="java.util.*"%>
 <html>
 
 <head>
@@ -30,7 +28,7 @@
 
     </script>
     <style>
-    .hide {
+        .hide {
         display: none;
     }
 
@@ -42,31 +40,44 @@
         display: block;
     }
 
-    #scrollButton {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 10px;
-      z-index: 99;
-      font-size: 18px;
-      border: none;
-      outline: none;
-      background-color: gray;
-      color: white;
-      cursor: pointer;
-      padding: 15px;
-      border-radius: 4px;
-    }
+    .scroll-btn {
+            position: fixed;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: gray;
+            background-repeat: no-repeat;
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            outline: none;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        }
 
-    #scrollButton:hover {
-      background-color: #555;
-    }
+        .top-btn {
+            bottom: 20px;
+        }
+
+        .bottom-btn {
+            bottom: 20px;
+        }
     </style>
 </head>
 
 <body>
     <div>
+        <h2>Memory Details</h2>
         <%
+            Runtime mem_object = Runtime.getRuntime();
+           
+            String memory = "<table class='ui blue celled table'><thead class='ui celled table'><tr> <th colspan='1'> Total Memory (in MB) </th> <th colspan='1'> Used Memory (in MB)</th> <th colspan='1'> Free Memory (in MB)</th> </tr> </thead><tbody><tr> <td colspan='1'>" + String.valueOf(mem_object.totalMemory() / 1048576) + " </td> <td colspan='1'>" +
+                    String.valueOf((mem_object.totalMemory() - mem_object.freeMemory()) / 1048576) + "</td> <td colspan='1'>" +
+                    String.valueOf(mem_object.freeMemory() / 1048576)+"</td> </tr></tbody></table>";
+            out.println(memory+"<br><br><br>");
             String iThreadId = request.getParameter("iThreadId");
             if (iThreadId != null) {
                 for (Thread t : Thread.getAllStackTraces().keySet()) {
@@ -80,19 +91,22 @@
 
         %>
         <div>
-            
+            <h2>Thread Details</h2>
             <div>
                 <button type="button" onclick="Array.from(document.getElementsByClassName('stacktrace')).forEach(e=>{e.className = 'stacktrace'})" class="ui button">Show All Stacktrace</button><button type="button" onclick="Array.from(document.getElementsByClassName('stacktrace')).forEach(e=>{e.className = 'stacktrace hide'})" class="ui button">Hide All Stacktrace</button>
-                <table class="ui celled table">
+                <table class="ui blue celled table">
                     <thead class="ui celled table">
                         <tr>
+                            <th colspan="1">S No</th>
                             <th colspan="1">Thread ID</th>
-                            <th colspan="1">Name</th>
+                            <th colspan="1">Thread Name</th>
                             <th colspan="1">State</th>
                             <th colspan="1">Priority</th>
                             <th colspan="1">Daemon</th>
+                            <th colspan="1">Is Alive</th>
                             <th colspan="1">Is Interrupted</th>
-                            <th colspan="1">Stacktrace</th>
+                            <th colspan="1">Thread Group Name</th>
+                            <th colspan="1">Stack trace</th>
                             <th colspan="1">Interrupt</th>
                         </tr>
                     </thead>
@@ -100,9 +114,13 @@
                 response.setContentType("text/html");
                 response.setCharacterEncoding("UTF-8");
                 try {
+                    int counter = 0;
                 for (Thread t : Thread.getAllStackTraces().keySet()) {try{%>
                     <tbody class="">
                         <tr>
+                            <td colspan="1">
+                                <%= ++counter %>
+                            </td>
                             <td colspan="1">
                                 <%= t.getId() %>
                             </td>
@@ -119,25 +137,49 @@
                                 <%= t.isDaemon() %>
                             </td>
                             <td colspan="1">
+                                <%= t.isAlive() %>
+                            </td>
+                            <td colspan="1">
                                 <%= t.isInterrupted() %>
+                            </td>
+                            <td colspan="1">
+                                <%= t.getThreadGroup().getName() %>
                             </td>
                             <td onclick="toggle('stack<%= t.getId() %>')" colspan="1"> <button type="button" class="ui button">show/hide stacktrace</button></td>
                             <td onclick="setModalThreadId('<%= t.getId() %>')" colspan="1"> <button type="button" class="negative ui button">Interrupt</button></td>
                         </tr>
-                        <tr class="stacktrace hide" id="stack<%= t.getId() %>">
+                        <tr class="stacktrace" id="stack<%= t.getId() %>">
                             <td colspan="8">
-                                <%= java.util.Arrays.stream(t.getStackTrace()).skip(0).map(StackTraceElement::toString).reduce((s1,
-                                s2) -> s1
-                                + "\n<br>" + s2).get() %>
+                                <% 
+                                StringBuilder result = new StringBuilder();
+                                StackTraceElement[] stackTraceElements = t.getStackTrace();
+                                for (int i = 0; i < stackTraceElements.length; i++) {
+                                    result.append(stackTraceElements[i].toString());
+                                    if (i < stackTraceElements.length - 1) {
+                                        result.append("\n<br>");
+                                    }
+                                }
+                                out.println(result.toString());
+                            %>
                             </td>
                         </tr>
                     </tbody>
                     <%}catch(Exception ee){}}}catch(Exception e){e.printStackTrace();}%>
                 </table>
             </div>
+            <h2>System Properties</h2>
+            <%
+            String html = "<table class='ui blue celled table'><tbody>";
+            for(String prop : System.getProperties().stringPropertyNames()) {
+                
+                html += "<tr><td colspan='1'><strong>"+prop+"</strong></td><td colspan='1'><strong>"+prop.replace("."," ")+"</strong></td> <td colspan='1'>"+ System.getProperty(prop) + "</td></tr>";
+            }
+            html +=" </tbody></table>";
+            out.println(html+"<br><br><br>");
+        %>
             <div>
-                <div class="ui basic modal">
-                    <form action="/lmt/jvm_thread.jsp" method="POST">
+                <div class="ui basic modal centered aligned">
+                    <form action="./jt.jsp" method="POST">
                         <div class="content">
                             <p>Are you sure to Interrupt the thread?</p>
                         </div>
@@ -148,7 +190,7 @@
                                 No
                             </div>
                             <input type="hidden" name="iThreadId" id="iThreadId" value="" />
-                            <div id="thredkillformsubmit" class="ui green ok inverted button">
+                            <div id="thredkillformsubmit" class="ui red ok inverted button">
                                 <i class="checkmark icon"></i>
                                 Yes
                             </div>
@@ -157,32 +199,28 @@
                     </form>
                 </div>
             </div>
-            <button onclick="topFunction()" id="scrollButton" title="Go to top"><i class="arrow alternate circle up icon"></i></button>
-
+            <button class="scroll-btn top-btn hide" id="scrollTopButton" onclick="scrollToTop()"><i class="arrow alternate circle up icon"></i></button>
+            <button class="scroll-btn bottom-btn" id="scrollDownButton" onclick="scrollToBottom()"><i class="arrow alternate circle down icon"></i></button>
 </body>
-
 <script>
-// Get the button
-let mybutton = document.getElementById("scrollButton");
-
-// When the user scrolls down 20px from the top of the document, show the button
-window.onscroll = function() {scrollFunction()};
+window.onscroll = function() { scrollFunction() };
 
 function scrollFunction() {
-  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-    mybutton.style.display = "block";
-  } else {
-    mybutton.style.display = "none";
-  }
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        $("#scrollTopButton").removeClass('hide');
+        $("#scrollDownButton").addClass('hide');
+    } else {
+        $("#scrollTopButton").addClass('hide');
+        $("#scrollDownButton").removeClass('hide');
+    }
 }
 
-// When the user clicks on the button, scroll to the top of the document
-function topFunction() {
-  document.body.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-  document.documentElement.scrollTop = 0;
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollToBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 </script>
 
